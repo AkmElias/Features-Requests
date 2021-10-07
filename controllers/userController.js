@@ -1,4 +1,5 @@
 import generateToken from "../utils/generateToken.js";
+import { errorHandler } from "../middilewares/errorMiddileware.js";
 import User from "../models/userModel.js";
 
 const authUser = async (req, res) => {
@@ -13,8 +14,7 @@ const authUser = async (req, res) => {
       token: generateToken(user._id, user.role),
     });
   } else {
-    res.status(401);
-    throw new Error("Invalid email or password");
+    res.status(401).json("Invalid email or password!");
   }
 };
 
@@ -30,10 +30,11 @@ const adminLogin = async (req, res) => {
         token: generateToken(user._id, user.role),
       });
     } else {
-      res.status(401);
-      throw new Error(
-        "Invalid email or password/ No admin with these cardential present"
-      );
+      res
+        .status(401)
+        .json(
+          "Invalid email or password/ No admin with these cardential present"
+        );
     }
   } catch (error) {
     throw new Error(error.message);
@@ -63,7 +64,7 @@ const registerUser = async (req, res) => {
       });
     } else {
       res.status(400);
-      throw new Error("Invalid user data");
+      res.json("Invalid user data");
     }
   } catch (error) {
     throw new Error(error.message);

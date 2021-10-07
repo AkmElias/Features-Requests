@@ -1,3 +1,3 @@
 module.exports = {
-    secret: "fullstack-secret-key",
-  };
+  secret: "fullstack-secret-key",
+};
