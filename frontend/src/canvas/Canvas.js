@@ -1,6 +1,6 @@
 import Features from './components/Features';
 import AddFeature from './components/AddFeature';
-import './style.css'
+import './assets/style.css'
 
 const Canvas = () => {
     return (

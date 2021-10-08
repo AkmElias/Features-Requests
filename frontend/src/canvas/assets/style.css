@@ -6,7 +6,7 @@
 }
 
 .canvas {
-  width: 90%;
+  width: 80%;
   min-height: 100vh;
   display: flex;
   justify-content: space-between;
@@ -18,7 +18,7 @@
 }
 
 .addFeature {
-  width: 25%;
+  width: 30%;
   height: fit-content;
   background-color: #eee;
   display: flex;
@@ -140,6 +140,7 @@
   padding-right: 10px;
   padding-left: 10px;
   padding-bottom: 5px;
+  border-radius: 5px;
 }
 
 .buttons-group button {

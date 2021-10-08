@@ -1,0 +1,169 @@
+.features{
+    width: 70%;
+    background-color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 20px;
+}
+
+.featuresTopBar{
+   width: 100%;
+   background-color: inherit;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 15px 10px;
+}
+
+.featuresTopBarLeft{
+    background-color: inherit;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0px 5px;
+}
+
+.featuresTopBarLeft p{
+    background-color: inherit;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 5px;
+}
+
+.menuSection {
+    background-color: inherit;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    cursor: pointer;
+    border-bottom: 1px dotted;
+}
+
+.menuSection p{
+    background-color: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 5px;
+}
+
+.menuSection img{
+    background-color: inherit;
+    width: 20px;
+    height: 20px;
+}
+
+.postMenu{
+    width: 300px;
+    height: fit-content;
+    position: absolute;
+    display: flex;
+    top: 50px;
+    left: 26px;
+    padding: auto;
+    z-index: 1;
+    background-color: #FFF;
+    box-shadow: 0 1px 10px rgb(50 50 50 / 20%);
+    transition: ease-in;
+    animation: slide-up .2s ease;
+    border-radius: 5px;
+}
+
+.postMenuSort{
+    background-color: inherit;
+    width: 50%;
+    padding: 10px;
+    border-right: 0.5px dashed;
+
+}
+
+.postMenuSort p{
+    background-color: inherit;
+    color: #999;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.postMenuSort h4{
+    background-color: inherit;
+    color: rgb(75, 68, 68);
+    cursor: pointer;
+    padding: 5px;
+}
+
+.postMenuSort h4:hover{
+    width: 100%;
+    background-color: rgb(180, 177, 177);
+}
+
+.postMenuFilter{
+    background-color: inherit;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+}
+
+.postMenuFilter p{
+    background-color: inherit;
+    color: #999;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.postMenuFilter h4{
+    background-color: inherit;
+    cursor: pointer;
+    color: rgb(75, 68, 68);
+    padding: 5px;
+}
+
+.postMenuFilter h4:hover{
+    width: 100%;
+    background-color: rgb(180, 177, 177);
+}
+
+.active{
+    color: rgb(123, 169, 230) !important;
+}
+
+/* feature search bar */
+.featureTopBarRight{
+    display: flex;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.searchActive{
+    display: flex;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.searchField{
+    background-color: inherit;
+    width: 100%;
+    margin: 0 5px;
+    padding: 5px;
+    font-size: 15px;
+    outline: none;
+    border-width:0px;
+}
+
+.searchIcon{
+    background-color: inherit;
+    padding-top: 8px;
+    padding-left: 5px;
+    cursor: pointer;
+    color: #aaa !important;
+}
+
+.closeIcon{
+    margin-top: 3px;
+    padding: 5px;
+    cursor: pointer;
+}

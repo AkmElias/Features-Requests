@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import "../style.css";
+import "../assets/style.css";
 
 const AddFeature = () => {
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [imageSrc, setImageSrc] = useState(null);
+  const [imageValue,setImageValue] = useState("");
+  const [imageSrc, setImageSrc] = useState("");
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -53,7 +54,7 @@ const AddFeature = () => {
         <img
           className="close"
           src="https://cdn.iconscout.com/icon/free/png-256/close-156-462132.png"
-          onClick={() => setImageSrc(null)}
+          onClick={() => setImageSrc("")}
         />
       </div>
     );
@@ -94,6 +95,8 @@ const AddFeature = () => {
                 type="file"
                 name="myfile"
                 style={{ display: "none" }}
+                value={imageValue}
+                onClick={() => setImageValue("")}
                 onChange={handleFileChange}
               />
             </label>
