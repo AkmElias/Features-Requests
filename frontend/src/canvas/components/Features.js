@@ -8,7 +8,7 @@ import "../assets/features.css";
 const Features = () => {
   const [selectedOption, setSelectedOption] = useState("New");
   const [showMenu, setShowMenu] = useState(false);
-  const [searchActive, setSearchActive] = useState(true);
+  const [searchActive, setSearchActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [features, setFeatures] = useState([1, 2, 3, 4]);
 

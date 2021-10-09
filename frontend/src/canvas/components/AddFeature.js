@@ -1,17 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 import "../assets/style.css";
 
 const AddFeature = () => {
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [imageValue,setImageValue] = useState("");
+  const [imageValue, setImageValue] = useState("");
   const [imageSrc, setImageSrc] = useState("");
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const submitRef = useRef();
+  const textareaRef = useRef();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,6 +63,19 @@ const AddFeature = () => {
     );
   };
 
+  useEffect(() => {
+    const calcHeight = (value) => {
+      let numberOfLineBreaks = (value.match(/\n/g) || []).length;
+      // min-height + lines x line-height + padding + border
+      let newHeight = 20 + numberOfLineBreaks * 20 + 12 + 2;
+      return newHeight;
+    };
+    textareaRef.current.addEventListener("input", () => {
+      textareaRef.current.style.height =
+        calcHeight(textareaRef.current.value) + "px";
+    });
+  });
+
   return (
     <div className="addFeature">
       <h3> Feature Request </h3>
@@ -78,6 +94,7 @@ const AddFeature = () => {
           <div className="formGroup">
             <label>Detail</label>
             <textarea
+              ref={textareaRef}
               rows="3"
               placeholder={"Any additional details..."}
               value={detail}
@@ -87,10 +104,7 @@ const AddFeature = () => {
           {imageSrc && renderImagePreview()}
           <div className="buttons-group">
             <label>
-              <img
-                src="https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png"
-                style={{ width: "20px", height: "20px" }}
-              />
+            <FontAwesomeIcon icon={faImage}/>
               <input
                 type="file"
                 name="myfile"
@@ -100,7 +114,9 @@ const AddFeature = () => {
                 onChange={handleFileChange}
               />
             </label>
-            <button ref={submitRef}>FEATURE REQUEST</button>
+            <button className="button" ref={submitRef}>
+              FEATURE REQUEST
+            </button>
           </div>
         </form>
         {error && <div className="error">{errorMessage}</div>}
