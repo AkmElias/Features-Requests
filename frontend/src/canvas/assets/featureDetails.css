@@ -409,6 +409,7 @@
     color: #999 !important;
     font-size: 12px !important;
     margin-right: 5px;
+    cursor: pointer;
 }
 
 .heartIcon:hover{

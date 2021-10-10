@@ -23,7 +23,7 @@
   background-color: #eee;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   padding: 10px;
   border-radius: 5px;
 }
@@ -52,7 +52,7 @@
   margin-top: 10px;
 }
 
-.formGroup{
+.addFeatureformGroup{
   display: flex;
   flex-direction: column;
   width: 95%;
@@ -63,7 +63,7 @@
   margin-bottom: 10px;
 }
 
-.formGroup label{
+.addFeatureformGroup label{
   font-size: 11px;
   font-weight: 700;
   color: #999;
@@ -73,7 +73,7 @@
   margin-bottom: 5px;
 }
 
-.formGroup input{
+.addFeatureformGroup input{
   border-width: 0;
   background-color: inherit;
   padding: 5px;
@@ -82,7 +82,7 @@
   letter-spacing: 0.05em;
 }
 
-.formGroup textarea{
+.addFeatureformGroup textarea{
   border-width: 0;
   background-color: inherit;
   padding: 5px;

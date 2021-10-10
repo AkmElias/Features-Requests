@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSearch } from "@fortawesome/free-solid-svg-icons";
-import PostMenu from "./PostMenu";
+import Menu from "./Menu";
 import Feature from "./Feature";
 import "../assets/features.css";
 
@@ -56,7 +56,7 @@ const Features = () => {
 
             {showMenu && (
               <div ref={menuRef} id="postMenu">
-                <PostMenu
+                <Menu
                   selectedOption={selectedOption}
                   selectOption={(option) => {
                     setSelectedOption(option);

@@ -1,0 +1,82 @@
+.signUpformContainer {
+  background-color: #FFF;
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+}
+
+.signUp {
+  background-color: inherit;
+  padding: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+  color: #1773EA;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.signUpformGroup{
+    background-color: #FFF;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+.signUpformGroup label{
+    background-color: inherit;
+    padding: 5px;
+    margin-bottom: 2px;
+    font-size: 15px;
+    color: #888;
+    font-weight: 500;
+}
+
+.signUpformGroup input{
+    /* background-color: inherit; */
+    padding: 10px;
+    font-size: 14px;
+    /* color: #000; */
+    font-weight: 400;
+    outline: none;
+    border-width: 0;
+    border-radius: 2px;
+}
+
+.signUpformGroup input:focus{
+    background-color: rgb(227, 226, 238);
+}
+
+.buttonsGroup{
+    background-color: inherit;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    justify-content: space-between;
+}
+
+.button{
+    border-radius: 5px;
+    box-shadow: 0;
+    font-size: 12px !important;
+}
+
+.buttonsGroup p{
+  background-color:inherit;
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+}
+
+.navSignIn{
+    background-color: inherit;
+    padding: 5px;
+    color: #669adf;
+    cursor: pointer;
+}
+
+.navSignIn:hover{
+    color: #1773EA;
+}
+

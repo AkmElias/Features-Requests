@@ -13,10 +13,10 @@ const filterOptions = [
   { label: "Complete", value: "Complete" },
 ];
 
-const PostMenu = ({ selectedOption, selectOption, setShowMenu }) => {
+const Menu = ({ selectedOption, selectOption, setShowMenu }) => {
   return (
-    <div className="postMenu">
-      <div className="postMenuSort">
+    <div className="menu">
+      <div className="menuSort">
         <p>Sort</p>
         {sortOptions.map((option) => {
           return (
@@ -33,7 +33,7 @@ const PostMenu = ({ selectedOption, selectOption, setShowMenu }) => {
           );
         })}
       </div>
-      <div className="postMenuFilter">
+      <div className="menuFilter">
         <p>Filter</p>
         {filterOptions.map((option) => {
           return (
@@ -54,4 +54,4 @@ const PostMenu = ({ selectedOption, selectOption, setShowMenu }) => {
   );
 };
 
-export default PostMenu;
+export default Menu;

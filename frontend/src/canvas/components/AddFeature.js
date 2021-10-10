@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
+
+import SignUpModal from "./SignUpModal.js"
+import SignInModal from "./SignInModal.js";
 import "../assets/style.css";
 
 const AddFeature = () => {
@@ -12,12 +15,15 @@ const AddFeature = () => {
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [signUpModal, setSignUpModal] = useState(false);
+  const [signInModal, setSignInModal] = useState(false);
 
   const submitRef = useRef();
   const textareaRef = useRef();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setSignInModal(true)
     if (!somethingMissing()) {
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -82,7 +88,7 @@ const AddFeature = () => {
       <p>Let us know what feature you'd like to see on our app</p>
       <div className="formContainer">
         <form onSubmit={handleSubmit} style={{ backgroundColor: "inherit" }}>
-          <div className="formGroup">
+          <div className="addFeatureformGroup">
             <label>Title</label>
             <input
               type="text"
@@ -91,7 +97,7 @@ const AddFeature = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          <div className="formGroup">
+          <div className="addFeatureformGroup">
             <label>Detail</label>
             <textarea
               ref={textareaRef}
@@ -104,7 +110,7 @@ const AddFeature = () => {
           {imageSrc && renderImagePreview()}
           <div className="buttons-group">
             <label>
-            <FontAwesomeIcon icon={faImage}/>
+              <FontAwesomeIcon icon={faImage} />
               <input
                 type="file"
                 name="myfile"
@@ -121,6 +127,8 @@ const AddFeature = () => {
         </form>
         {error && <div className="error">{errorMessage}</div>}
       </div>
+      {signUpModal && <SignUpModal setSignUpModal = {(value) => setSignUpModal(value)}/>}
+      {signInModal && <SignInModal setSignInModal = {(value) => setSignInModal(value)}/>}
     </div>
   );
 };
