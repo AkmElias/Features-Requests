@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Modal from "react-modal";
-import "../assets/signInModal.css";
+import "./signInModal.css";
 
 const customStyles = {
   content: {
@@ -21,14 +21,18 @@ const customStyles = {
 const SignInModal = (props) => {
   let subtitle;
   const [isOpen, setIsOpen] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   function openModal() {
     setIsOpen(true);
   }
 
   useEffect(() => {
-    console.log(props);
-  });
+    if (email && password) setError(false);
+  }, [email, password]);
 
   function afterOpenModal() {
     // references are now sync'd and can be accessed.
@@ -36,13 +40,57 @@ const SignInModal = (props) => {
   }
 
   function closeModal() {
-    props.setSignUpModal(false);
+    props.setSignInModal(false);
     setIsOpen(false);
   }
 
-  const handleSubmit = () => {
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    if (email && password) {
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
 
-  }
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (email && password) {
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
+
+  const checkMissingError = () => {
+    if (!email && !password) {
+      setErrorMessage("Email and Pasword are required!");
+      setError(true);
+      return true;
+    } else if (!email && password) {
+      setErrorMessage("Email is required!");
+      setError(true);
+      return true;
+    } else if (email && !password) {
+      setErrorMessage("Pasword is required!");
+      setError(true);
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!checkMissingError()) {
+      setError(false);
+      console.log(email, password);
+      props.setSignInModal(false);
+    } else {
+      setError(true);
+    }
+  };
+
   return (
     <div className="signInModal">
       {isOpen && (
@@ -55,7 +103,7 @@ const SignInModal = (props) => {
         >
           <div>
             <div className="signInformContainer">
-                <p className="signIn">Sign In </p>
+              <p className="signIn">Sign In </p>
               <form
                 onSubmit={handleSubmit}
                 style={{ backgroundColor: "inherit" }}
@@ -66,6 +114,8 @@ const SignInModal = (props) => {
                     className="formGroupInput"
                     placeholder={"Enter a valid email."}
                     type="email"
+                    value={email}
+                    onChange={handleEmailChange}
                   />
                 </div>
                 <div className="signInformGroup">
@@ -74,18 +124,20 @@ const SignInModal = (props) => {
                     className="formGroupInput"
                     placeholder={"Enter password"}
                     type="password"
+                    value={password}
+                    onChange={handlePasswordChange}
                   />
                 </div>
+                {error && <div className="error">{errorMessage}</div>}
                 <div className="buttonsGroup">
-                  
-                  <button className="button" onSubmit={closeModal}>
+                  <button className="button" type="submit">
                     SUBMIT
                   </button>
-                  <p>Didn't Signed up? <span className="navSignUp">Sign up</span></p>
+                  <p>
+                    Didn't Signed up? <span className="navSignUp">Sign up</span>
+                  </p>
                 </div>
-                <div>
-
-                </div>
+                <div></div>
               </form>
               {/* {error && <div className="error">{errorMessage}</div>} */}
             </div>

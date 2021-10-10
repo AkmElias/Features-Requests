@@ -2,8 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 
-import SignUpModal from "./SignUpModal.js"
-import SignInModal from "./SignInModal.js";
 import "../assets/style.css";
 
 const AddFeature = () => {
@@ -15,15 +13,13 @@ const AddFeature = () => {
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [signUpModal, setSignUpModal] = useState(false);
-  const [signInModal, setSignInModal] = useState(false);
+ 
 
   const submitRef = useRef();
   const textareaRef = useRef();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSignInModal(true)
     if (!somethingMissing()) {
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -34,10 +30,6 @@ const AddFeature = () => {
   const somethingMissing = () => {
     if (!title && !detail) {
       setErrorMessage("Opps! Feature title missing.");
-      setError(true);
-      return true;
-    } else if (!detail && title) {
-      setErrorMessage("Opps! Detail is necessary.");
       setError(true);
       return true;
     } else if (!title && detail) {
@@ -127,8 +119,6 @@ const AddFeature = () => {
         </form>
         {error && <div className="error">{errorMessage}</div>}
       </div>
-      {signUpModal && <SignUpModal setSignUpModal = {(value) => setSignUpModal(value)}/>}
-      {signInModal && <SignInModal setSignInModal = {(value) => setSignInModal(value)}/>}
     </div>
   );
 };
