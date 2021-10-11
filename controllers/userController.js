@@ -1,5 +1,6 @@
 import generateToken from "../utils/generateToken.js";
 import { errorHandler } from "../middilewares/errorMiddileware.js";
+import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 
 const authUser = async (req, res) => {
@@ -7,11 +8,13 @@ const authUser = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
-    res.json({
+    res.json({user: {
       _id: user._id,
       userName: user.userName,
       role: user.role,
+      profilePicture: user.profilePicture,
       token: generateToken(user._id, user.role),
+    }
     });
   } else {
     res.status(401).json("Invalid email or password!");
@@ -41,14 +44,15 @@ const adminLogin = async (req, res) => {
   }
 };
 
-const registerUser = async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   const { userName, email, role, password } = req.body;
+  console.log(req.body);
   try {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
       res.status(400);
-      throw new Error("User already exists");
+     throw new Error("User already exist!")
     }
 
     const user = await User.create({
@@ -63,12 +67,12 @@ const registerUser = async (req, res) => {
         message: "You have been registered!",
       });
     } else {
-      res.status(400);
-      res.json("Invalid user data");
+      res.status(401);
+      res.json({ message: "Invalid user data" });
     }
   } catch (error) {
     throw new Error(error.message);
   }
-};
+});
 
 export { authUser, registerUser, adminLogin };

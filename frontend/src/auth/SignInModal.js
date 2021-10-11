@@ -100,6 +100,7 @@ const SignInModal = (props) => {
           type: "SET_USER",
           user: response.data.user,
         });
+        localStorage.setItem("user", JSON.stringify(response.data.user))
         props.setSignInModal(false);
         setIsOpen(false);
       })

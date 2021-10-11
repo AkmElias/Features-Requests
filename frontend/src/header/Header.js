@@ -7,33 +7,67 @@ import { UserContext } from "../contexts/userContext";
 const Header = () => {
   const [signUpModal, setSignUpModal] = useState(false);
   const [signInModal, setSignInModal] = useState(false);
-  const [{ user }] = useContext(UserContext);
+  const [{user}, dispatch] = useContext(UserContext);
+
+  if(!user && localStorage.getItem("user")){
+    dispatch({
+      type: "SET_USER",
+      user: JSON.parse(localStorage.getItem("user"))
+    })
+  }
+
+  const removeUser = () => {
+    localStorage.removeItem("user");
+    dispatch({
+      type: "REMOVE_USER",
+    });
+  };
+  
+  // useEffect(() => {
+  //   if(!user && localStorage.getItem("user")){
+  //     dispatch({
+  //       type: "SET_USER",
+  //       user: JSON.parse(localStorage.getItem("user"))
+  //     })
+  //   }
+  // })
 
   return (
     <div className="header">
       <div className="headerContent">
         <p className="logo">Feature Requests</p>
         <div className="headerRight">
-          <p
-            onClick={() => {
-              setSignInModal(true);
-              setSignUpModal(false);
-            }}
-          >
-            Sign In
-          </p>
-          <p
-            onClick={() => {
-              setSignUpModal(true);
-              setSignInModal(false);
-            }}
-          >
-            Sign Up
-          </p>
-          <img
-            clasName="avatar"
-            src="https://data.whicdn.com/images/322027365/original.jpg?t=1541703413"
-          />
+          {user ? (
+            <>
+              <img
+                clasName="avatar"
+                src={
+                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt9DZKrj_ZJD2EPmds05DCPmPdXht9oG-PmYytmlbajeltPyRJXxhoepGbXsbwBjc6Cl0&usqp=CAU"
+                }
+              />
+              <span style={{ backgroundColor: "inherit", color: "#FFF", marginRight:"15px", cursor:"pointer"}}>{user.userName}</span>
+              <p onClick={removeUser}>Sign Out</p>
+            </>
+          ) : (
+            <>
+              <p
+                onClick={() => {
+                  setSignInModal(true);
+                  setSignUpModal(false);
+                }}
+              >
+                Sign In
+              </p>
+              <p
+                onClick={() => {
+                  setSignUpModal(true);
+                  setSignInModal(false);
+                }}
+              >
+                Sign Up
+              </p>
+            </>
+          )}
         </div>
       </div>
       {signUpModal && (

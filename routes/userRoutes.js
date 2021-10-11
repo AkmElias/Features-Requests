@@ -7,7 +7,7 @@ import {
 } from "../controllers/userController.js";
 import { protect, admin } from "../middilewares/authMiddileware.js";
 
-router.route("/").post(registerUser);
+router.route("/register").post(registerUser);
 router.post("/login", authUser);
 router.post("/admin/login", adminLogin);
 

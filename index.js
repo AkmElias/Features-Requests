@@ -3,17 +3,22 @@ import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-
+import bodyParser from 'body-parser'
 import userRoutes from "./routes/userRoutes.js";
+import featureRoutes from "./routes/featureRoutes.js";
+import uploadRoutes from './routes/uploadRoutes.js'
 
 dotenv.config();
 connectDB();
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.urlencoded({extended : true}))
+app.use(express.json({extended : false}));
 
 app.use("/api/users", userRoutes);
+app.use('/api/features', featureRoutes);
+app.use('/api/upload', uploadRoutes)
 
 const __dirname = path.resolve();
 

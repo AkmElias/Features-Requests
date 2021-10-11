@@ -1,30 +1,115 @@
 import { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
-
+import SignInModal from "../../auth/SignInModal";
 import "../assets/style.css";
 
+import axios from "axios";
+
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    width: "350px",
+    display: "flex",
+    flexDirection: "column",
+    padding: "40px",
+    backgroundColor: "#FFF",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+};
+
+const baseURL = "http://localhost:5000/api";
+
 const AddFeature = () => {
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [signInModal, setSignInModal] = useState(false);
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageValue, setImageValue] = useState("");
   const [imageSrc, setImageSrc] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
- 
 
   const submitRef = useRef();
   const textareaRef = useRef();
 
-  const handleSubmit = (e) => {
+  // useEffect(() => {
+  //   setUser(JSON.parse(localStorage.getItem("user")));
+  //   console.log(user)
+  // },[])
+
+  const handleFileUpload = async (e) => {
     e.preventDefault();
-    if (!somethingMissing()) {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      console.log(formData.get("file"));
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    setUploading(true);
+
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+
+      const { data } = await axios.post(`${baseURL}/upload/`, formData, config);
+      setUploading(false);
+      return data;
+    } catch (error) {
+      console.error(error);
+      setUploading(false);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      setSignInModal(true);
+      return;
+    }
+    let imagePath;
+    if (!somethingMissing()) {
+      if (selectedFile) {
+        imagePath = await handleFileUpload(e);
+      }
+
+      try {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+        console.log(imagePath);
+        axios
+          .post(
+            `${baseURL}/features/post/`,
+            { title, detail, imagePath },
+            config
+          )
+          .then((response) => {
+            resetAddFeatureForm();
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (error) {}
+      // axios.post("/api/features/post", {title})
+    }
+  };
+
+  const resetAddFeatureForm = () => {
+    setTitle("");
+    setDetail("");
+    setImageSrc("");
+    setSelectedFile(null);
   };
 
   const somethingMissing = () => {
@@ -119,6 +204,9 @@ const AddFeature = () => {
         </form>
         {error && <div className="error">{errorMessage}</div>}
       </div>
+      {signInModal && (
+        <SignInModal setSignInModal={(value) => setSignInModal(value)} />
+      )}
     </div>
   );
 };

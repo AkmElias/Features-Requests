@@ -39,7 +39,7 @@ const Feature = () => {
           accounts so that when I finish an episode on ...
         </p>
       </div>
-      <div className="featureComments">
+      <div className="featureComments" onClick={gotToDetails}>
         <FontAwesomeIcon icon={faComment} className="commentIcon" />
         <p>12</p>
       </div>

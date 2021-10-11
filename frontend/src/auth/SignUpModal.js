@@ -127,6 +127,8 @@ const SignUpModal = (props) => {
           type: "REGISTRATION_SUCCESS",
         });
         setCongratsMessage(response.data.message);
+        setIsOpen(false);
+        props.setSignUpModal(false);
       })
       .catch((error) => {
         dispatch({

@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   profilePicture: {
     type: String,
     default:
-      "https://data.whicdn.com/images/322027365/original.jpg?t=1541703413",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt9DZKrj_ZJD2EPmds05DCPmPdXht9oG-PmYytmlbajeltPyRJXxhoepGbXsbwBjc6Cl0&usqp=CAU",
   },
 });
 
