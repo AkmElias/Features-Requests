@@ -1,6 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Modal from "react-modal";
 import "./signUpModal.css";
+import { UserContext } from "../contexts/userContext";
+import axios from "axios";
+
+const baseURL = "http://localhost:5000/api/users/register/";
+
+const config = {
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
 
 const customStyles = {
   content: {
@@ -20,21 +30,23 @@ const customStyles = {
 
 const SignUpModal = (props) => {
   let subtitle;
+  const [{ loading }, dispatch] = useContext(UserContext);
   const [isOpen, setIsOpen] = useState(true);
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [congratsMessage, setCongratsMessage] = useState("");
 
   function openModal() {
     setIsOpen(true);
   }
 
   useEffect(() => {
+    setCongratsMessage("");
     if (email && password && userName) setError(false);
   }, [email, password, userName]);
-
 
   function afterOpenModal() {
     // references are now sync'd and can be accessed.
@@ -98,22 +110,48 @@ const SignUpModal = (props) => {
       setErrorMessage("Username is required!");
       setError(true);
       return true;
-    }else if (!email && password && userName) {
+    } else if (!email && password && userName) {
       setErrorMessage("Email is required!");
       setError(true);
       return true;
-    } 
-    else {
+    } else {
       return false;
     }
+  };
+
+  const register = async () => {
+    await axios
+      .post(baseURL, JSON.stringify({ userName, email, password }), config)
+      .then((response) => {
+        dispatch({
+          type: "REGISTRATION_SUCCESS",
+        });
+        setCongratsMessage(response.data.message);
+      })
+      .catch((error) => {
+        dispatch({
+          type: "REGISTRATION_FAIL",
+        });
+        setCongratsMessage("");
+        setError(true);
+        if (error.message === "Request failed with status code 400") {
+          setErrorMessage("user Already exist!");
+        } else if (error.message === "Request failed with status code 401") {
+          setErrorMessage("Invalid user data");
+        } else {
+          setErrorMessage(error.message);
+        }
+      });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!checkMissingError()) {
       setError(false);
-      console.log(userName, email, password)
-      // props.setSignUpModal(false);
+      dispatch({
+        type: "REGISTRATION_START",
+      });
+      register();
     } else {
       setError(true);
     }
@@ -165,7 +203,20 @@ const SignUpModal = (props) => {
                     onChange={handlePasswordChange}
                   />
                 </div>
+                {loading && <div className="loading">{"Processing......"}</div>}
                 {error && <div className="error">{errorMessage}</div>}
+                {congratsMessage && (
+                  <div
+                    style={{
+                      backgroundColor: "inherit",
+                      padding: "5px",
+                      color: "green",
+                      textAlign: "center",
+                    }}
+                  >
+                    {congratsMessage}
+                  </div>
+                )}
                 <div className="buttonsGroup">
                   <button className="button" type="submit">
                     SUBMIT

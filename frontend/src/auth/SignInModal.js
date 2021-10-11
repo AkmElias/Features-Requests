@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Modal from "react-modal";
 import "./signInModal.css";
+import { UserContext } from "../contexts/userContext";
+import axios from "axios";
 
 const customStyles = {
   content: {
@@ -18,8 +20,17 @@ const customStyles = {
   },
 };
 
+const baseURL = "http://localhost:5000/api/users/login/";
+
+const config = {
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+
 const SignInModal = (props) => {
   let subtitle;
+  const [{ loading }, dispatch] = useContext(UserContext);
   const [isOpen, setIsOpen] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -80,12 +91,42 @@ const SignInModal = (props) => {
     }
   };
 
+  const login = async () => {
+    await axios
+      .post(baseURL, { email, password }, config)
+      .then((response) => {
+        console.log(response.data);
+        dispatch({
+          type: "SET_USER",
+          user: response.data.user,
+        });
+        props.setSignInModal(false);
+        setIsOpen(false);
+      })
+      .catch((error) => {
+        dispatch({
+          type: "LOGIN_FAIL",
+        });
+        if (error.message === "Request failed with status code 401") {
+          setError(true);
+          setErrorMessage("UserName/Password doesn't match");
+        } else {
+          setError(true);
+          setErrorMessage(error.message);
+        }
+      });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!checkMissingError()) {
       setError(false);
-      console.log(email, password);
-      props.setSignInModal(false);
+      login();
+      dispatch({
+        type: "LOGIN_START",
+      });
+      // console.log(email, password);
+      // props.setSignInModal(false);
     } else {
       setError(true);
     }
@@ -128,6 +169,7 @@ const SignInModal = (props) => {
                     onChange={handlePasswordChange}
                   />
                 </div>
+                {loading && <div className="loading">{"Verifying......"}</div>}
                 {error && <div className="error">{errorMessage}</div>}
                 <div className="buttonsGroup">
                   <button className="button" type="submit">
