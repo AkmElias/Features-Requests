@@ -32,7 +32,7 @@ const AddFeature = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageValue, setImageValue] = useState("");
   const [imageSrc, setImageSrc] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -45,12 +45,9 @@ const AddFeature = () => {
   //   console.log(user)
   // },[])
 
-  const handleFileUpload = async (e) => {
-    e.preventDefault();
+  const handleFileUpload = async () => {
     const formData = new FormData();
     formData.append("file", selectedFile);
-    setUploading(true);
-
     try {
       const config = {
         headers: {
@@ -59,48 +56,53 @@ const AddFeature = () => {
       };
 
       const { data } = await axios.post(`${baseURL}/upload/`, formData, config);
-      setUploading(false);
       return data;
+      
     } catch (error) {
       console.error(error);
-      setUploading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
+    let imagePath;
     if (!user) {
       setSignInModal(true);
       return;
     }
-    let imagePath;
     if (!somethingMissing()) {
       if (selectedFile) {
-        imagePath = await handleFileUpload(e);
+        console.log("fuck")
+       imagePath =  await handleFileUpload(e);
+        e.preventDefault();
       }
 
-      try {
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        console.log(imagePath);
-        axios
-          .post(
-            `${baseURL}/features/post/`,
-            { title, detail, imagePath },
-            config
-          )
-          .then((response) => {
-            resetAddFeatureForm();
-            console.log(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } catch (error) {}
+        try {
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+          };
+          console.log(imagePath);
+          axios
+            .post(
+              `${baseURL}/features/post/`,
+              { title, detail, imagePath },
+              config
+            )
+            .then((response) => {
+              setLoading(false);
+              resetAddFeatureForm();
+              console.log(response.data);
+              window.location.reload();
+            })
+            .catch((error) => {
+              setLoading(false);
+              console.log(error);
+            });
+        } catch (error) {}
       // axios.post("/api/features/post", {title})
     }
   };
@@ -197,6 +199,7 @@ const AddFeature = () => {
                 onChange={handleFileChange}
               />
             </label>
+            {loading && <div className="loading">{"Posting...."}</div>}
             <button className="button" ref={submitRef}>
               FEATURE REQUEST
             </button>

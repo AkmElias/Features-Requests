@@ -3,6 +3,7 @@
     display: flex;
     position: relative;
     /* align-items: center; */
+    /* justify-content:space-between; */
     margin-bottom: 10px;
     padding: 10px 0px;
 }
@@ -61,7 +62,17 @@
     font-weight: 500;
 }
 
+.featureContent .featureLogo {
+    /* background-color: inherit; */
+    height: 150px;
+    max-width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+}
+
 .featureComments{
+    position: absolute;
+    right: 0px;
     padding: 8px;
     background-color: inherit;
     display: flex;
