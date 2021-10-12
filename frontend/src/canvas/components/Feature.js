@@ -4,20 +4,22 @@ import { faComment, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 import "../assets/feature.css";
 const Feature = ({feature}) => {
+  // console.log(feature)
   const [status, setStatus] = useState(feature?.status);
   const [statusColor, setStatusColor] = useState("inProgress");
   const [title, setTitle] = useState(feature?.title);
   const [detail, setDetail] = useState(feature?.detail);
   const [imageSrc, setImageSrc] = useState(feature?.logo);
-  const [votes,setVotes] = useState(feature?.votes);
+  const [votes,setVotes] = useState(feature?.numOfVotes ? feature?.numOfVotes : 0);
 
   let history = useHistory();
   const gotToDetails = () => {
-    history.push("/details");
+
+    history.push(`/details/${feature._id}`);
   };
 
   const getProperImagePath = (imagePath) => {
-    console.log(imagePath)
+    // console.log(imagePath)
     let tempImagePath = "";
     if (imagePath[1] === "f") {
       for (let i = 24; i < imagePath.length; i++) {

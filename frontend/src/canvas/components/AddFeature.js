@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import SignInModal from "../../auth/SignInModal";
 import "../assets/style.css";
-
+import { UserContext } from "../../contexts/userContext";
 import axios from "axios";
 
 const customStyles = {
@@ -25,7 +25,13 @@ const customStyles = {
 const baseURL = "http://localhost:5000/api";
 
 const AddFeature = () => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [{user}, dispatch] = useContext(UserContext);
+  if(!user && localStorage.getItem("user")){
+    dispatch({
+      type: "SET_USER",
+      user: JSON.parse(localStorage.getItem("user"))
+    })
+  }
   const [signInModal, setSignInModal] = useState(false);
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
@@ -68,6 +74,7 @@ const AddFeature = () => {
     setLoading(true)
     let imagePath;
     if (!user) {
+      setLoading(false);
       setSignInModal(true);
       return;
     }

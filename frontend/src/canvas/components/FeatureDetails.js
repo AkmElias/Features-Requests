@@ -11,6 +11,9 @@ import { useHistory } from "react-router-dom";
 import "../assets/featureDetails.css";
 
 const FeatureDetails = () => {
+  const [featureId, setFeatureId] = useState(
+    window.location.pathname.split("/")[2]
+  );
   const [faces, setFaces] = useState([1, 2, 3, 4]);
   const [status, setStatus] = useState("In progress");
   const [statusColor, setStatusColor] = useState("inProgress");
@@ -45,6 +48,10 @@ const FeatureDetails = () => {
     setSelectedFile(e.target.files[0]);
     setImageSrc(URL.createObjectURL(e.target.files[0]));
   };
+
+  useEffect(() => {
+    console.log("id: ", featureId);
+  });
 
   useEffect(() => {
     if (status === "In progress") {
@@ -119,7 +126,9 @@ const FeatureDetails = () => {
                     onChange={handleFileChange}
                   />
                 </label>
-                <button className="button" type="submit">SUBMIT</button>
+                <button className="button" type="submit">
+                  SUBMIT
+                </button>
               </div>
             </div>
           )}
@@ -160,7 +169,7 @@ const FeatureDetails = () => {
       </div>
     );
   };
-  
+
   const renderComment = (comment, index) => {
     return (
       <div className="comment">
@@ -239,8 +248,8 @@ const FeatureDetails = () => {
               })}
             </div>
           </div>
-          {comments.map((comment,index) => {
-            return renderComment(comment,index)
+          {comments.map((comment, index) => {
+            return renderComment(comment, index);
           })}
         </div>
       </div>

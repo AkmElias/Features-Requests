@@ -16,7 +16,9 @@ const Features = () => {
   const [searchActive, setSearchActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [features, setFeatures] = useState([1, 2, 3, 4]);
+  const [features, setFeatures] = useState();
+  const [filteredFeatures, setFilteredFeatures] = useState([]);
+  const [filterOption, setFilterOption] = useState("");
 
   const menuRef = useRef();
   const searchRef = useRef();
@@ -30,14 +32,15 @@ const Features = () => {
   useEffect(async () => {
     await axios
       .get(`${baseURL}`, config)
-      .then((response) =>{
-        console.log(response)
-        setFeatures(response.data?.features)
-        setLoading(false)
-      } )
+      .then((response) => {
+        console.log(response);
+        setFeatures(response.data?.features);
+        setFilteredFeatures(response.data.features);
+        setLoading(false);
+      })
       .catch((error) => {
         setLoading(false);
-        console.log(error)
+        console.log(error);
       });
   }, []);
 
@@ -45,7 +48,29 @@ const Features = () => {
     setShowMenu(!showMenu);
   };
 
-  const handleSearch = () => {};
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    if (setSearchTerm) {
+      const newFeatures = features.filter((feature) => {
+        return feature.title.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      setFilteredFeatures(newFeatures);
+    } else {
+      setFilteredFeatures(features);
+    }
+  };
+
+  useEffect(() => {
+    console.log(filterOption)
+    if (filterOption) {
+      const newFeatures = features.filter((feature) => {
+        return feature.status === filterOption;
+      });
+      setFilteredFeatures(newFeatures);
+    } else {
+      setFilteredFeatures(features);
+    }
+  }, [filterOption]);
 
   useEffect(() => {
     const activeSearch = () => {
@@ -79,6 +104,7 @@ const Features = () => {
                     setSelectedOption(option);
                   }}
                   setShowMenu={setShowMenu}
+                  setFilterOption={(value) => setFilterOption(value)}
                 />
               </div>
             )}
@@ -89,15 +115,14 @@ const Features = () => {
           <FontAwesomeIcon
             icon={faSearch}
             className="searchIcon"
+            type="submit"
             onSubmit={handleSearch}
           />
           <input
             type="text"
             placeholder={"Search..."}
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-            }}
+            onChange={handleSearch}
             className="searchField"
             ref={searchRef}
           />
@@ -127,11 +152,17 @@ const Features = () => {
           {"Loading......."}
         </div>
       ) : (
-        features.map((feature, index) => {
-          return <Feature key={index} feature={feature}/>;
-        })
+        <>
+          {searchTerm || filterOption
+            ? filteredFeatures.map((feature) => {
+                return <Feature key={feature._id} feature={feature} />;
+              })
+            : features.map((feature) => {
+                return <Feature key={feature._id} feature={feature} />;
+              })}
+        </>
       )}
-    </div> 
+    </div>
   );
 };
 

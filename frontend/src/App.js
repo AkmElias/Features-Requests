@@ -10,7 +10,7 @@ function App() {
     <Router>
       <div className="App">
         <Switch>
-        <Route path="/details">
+        <Route path="/details/:featureId">
             <Header />
             <FeatureDetails />
           </Route>
