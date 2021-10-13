@@ -75,4 +75,15 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-export { authUser, registerUser, adminLogin };
+const getUserById = asyncHandler(async (req, res) => {
+  console.log(req.params)
+  try{
+    let data = await User.findById({_id: req.params.id});
+    res.status(200).json(data);
+  }catch (error) {
+    res.status(500);
+    throw new Error("server error")
+  }
+})
+
+export { authUser, registerUser, adminLogin, getUserById };

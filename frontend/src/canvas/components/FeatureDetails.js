@@ -9,8 +9,9 @@ import {
 import { useHistory } from "react-router-dom";
 
 import { UserContext } from "../../contexts/userContext";
-import {formateDate, getProperImagePath} from "../../utils/utility.js";
+import { formateDate, getProperImagePath } from "../../utils/utility.js";
 import axios from "axios";
+import SignInModal from "../../auth/SignInModal";
 import "../assets/featureDetails.css";
 
 const baseURL = "http://localhost:5000/api";
@@ -36,14 +37,20 @@ const FeatureDetails = () => {
   const [status, setStatus] = useState("In progress");
   const [statusColor, setStatusColor] = useState("inProgress");
   const [textareaActive, setTextareActive] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [imageValue, setImageValue] = useState("");
-  const [imageSrc, setImageSrc] = useState("");
   const [activeActivity, setActiveActivity] = useState("newest");
   const [feature, setFeature] = useState({});
   const [featureAuthor, setFeatureAuthor] = useState({});
-  const [comments, setComments] = useState([1, 2, 3, 4]);
+  const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  //comment state
+  const [signInModal, setSignInModal] = useState(false);
+  const [comment, setComment] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageValue, setImageValue] = useState("");
+  const [imageSrc, setImageSrc] = useState("");
+  const [commentAuthorId, setCommentAuthorId] = useState(null);
+  const [commentAuthorDetails, setCommentAuthorDetails] = useState({});
 
   let history = useHistory();
   const textareaRef = useRef();
@@ -72,7 +79,7 @@ const FeatureDetails = () => {
         },
       };
       axios
-        .get(`${baseURL}/features/feature/${featureId}`, config)
+        .get(`${baseURL}/features/${featureId}`, config)
         .then((response) => {
           setFeature(response.data);
           setStatus(response.data.status);
@@ -89,7 +96,6 @@ const FeatureDetails = () => {
           setLoading(false);
           console.log(error);
         });
-
       // return data;
     } catch (error) {
       console.error(error);
@@ -133,6 +139,87 @@ const FeatureDetails = () => {
     }
   });
 
+  const handleFileUpload = async () => {
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+
+      const { data } = await axios.post(`${baseURL}/upload/`, formData, config);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let imagePath;
+    if (!user) {
+      setSignInModal(true);
+    } else {
+      if (comment) {
+        if (selectedFile) {
+          imagePath = await handleFileUpload(e);
+          e.preventDefault();
+        }
+        try {
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+          };
+          console.log(imagePath);
+          axios
+            .post(
+              `${baseURL}/features/comment/${feature._id}`,
+              { comment, imagePath },
+              config
+            )
+            .then((response) => {
+              resetAddFeatureForm();
+              setComments(response.data.comments);
+              console.log(response.data);
+              // window.location.reload();
+            })
+            .catch((error) => {
+              setLoading(false);
+              console.log(error);
+            });
+        } catch (error) {}
+      }
+    }
+    // console.log(selectedFile, comment);
+  };
+
+  const resetAddFeatureForm = () => {
+    setComment("");
+    setImageSrc("");
+    setSelectedFile(null);
+  };
+
+  useEffect(() => {
+
+
+  },[commentAuthorId])
+
+  const getCommentAuthorDetails = (authorId) => {
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    axios.get(`${baseURL}/users/${authorId}`, config).then((response) => {
+      setCommentAuthorDetails(response.data);
+      console.log(commentAuthorDetails);
+    });
+  };
+  
   const renderRightSectionTop = () => {
     return (
       <div className="rightSectionTop">
@@ -154,8 +241,14 @@ const FeatureDetails = () => {
         className="commentForm"
         onDoubleClick={() => setTextareActive(false)}
       >
-        <form className="form">
-          <textarea placeholder="Leave a comment" rows="1" ref={textareaRef} />
+        <form className="form" onSubmit={handleSubmit}>
+          <textarea
+            placeholder="Leave a comment"
+            rows="1"
+            ref={textareaRef}
+            onChange={(e) => setComment(e.target.value)}
+            value={comment}
+          />
           {textareaActive && (
             <div className="formBottom">
               {imageSrc && renderImagePreview()}
@@ -198,19 +291,22 @@ const FeatureDetails = () => {
   const renderPost = () => {
     return (
       <div className="post">
-        <img
-          src={featureAuthor.profilePicture}
-          className="userAvatar"
-        />
+        <img src={featureAuthor.profilePicture} className="userAvatar" />
         <div className="postRight">
           <p className="userName">{featureAuthor.userName}</p>
-          <p className="postDetail">
-           {feature.detail}
-          </p>
-          {feature.logo && ( <img
-          src={getProperImagePath(feature.logo)}
-          style={{maxWidth: "100%", maxHeight: "200px", marginBottom: "5px", padding: "5px", borderRadius: "5px",}}
-        />)}
+          <p className="postDetail">{feature.detail}</p>
+          {feature.logo && (
+            <img
+              src={getProperImagePath(feature.logo)}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "200px",
+                marginBottom: "5px",
+                padding: "5px",
+                borderRadius: "5px",
+              }}
+            />
+          )}
           <p className="date">{formateDate(feature.createdAt)}</p>
         </div>
       </div>
@@ -226,21 +322,21 @@ const FeatureDetails = () => {
             "https://data.whicdn.com/images/322027365/original.jpg?t=1541703413"
           }
         />
+        {/* {getCommentAuthorDetails(comment.author)} */}
         <div className="commentMain">
           <p className="commentAuthor">Elias</p>
-          <p className="commentContent">
-            Any updates on an ETA for this? I love kitsu but I just keep going
-            back to MAL because the seasonal view is just so nice to use
-          </p>
-          <img
-            className="commentImage"
-            src="https://data.whicdn.com/images/322027365/original.jpg?t=1541703413"
-          />
+          <p className="commentContent">{comment.content}</p>
+          {comment.logo && (
+            <img
+              className="commentImage"
+              src={getProperImagePath(comment.logo)}
+            />
+          )}
           <div className="commentBottom">
             <FontAwesomeIcon icon={faHeart} className="heartIcon" />
             <p className="count">0</p>
             <p className="dot">.</p>
-            <p className="date">{date}</p>
+            <p className="date">{formateDate(comment.createdAt)}</p>
           </div>
         </div>
       </div>
@@ -312,6 +408,7 @@ const FeatureDetails = () => {
                 </div>
               </div>
               {comments.map((comment, index) => {
+                // setCommentAuthorId(comment.author)
                 return renderComment(comment, index);
               })}
             </div>

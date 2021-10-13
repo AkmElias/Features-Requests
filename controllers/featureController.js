@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import Feature from "../models/featureModel.js";
 
 const postFeature = asyncHandler(async (req, res) => {
-    console.log(req.body)
+  // console.log(req.body);
   const feature = new Feature({
     title: req.body.title,
     detail: req.body.detail ? req.body.detail : "",
@@ -16,22 +16,76 @@ const postFeature = asyncHandler(async (req, res) => {
     res.status(201).json(createdFeaturePost);
   } catch (error) {
     res.status(500);
-    throw new Error("Server error")
+    throw new Error("Server error");
   }
 });
 
 const getFeatures = asyncHandler(async (req, res) => {
-    let pageSize = 10;
-    let page = Number(req.query.pageNumber) || 1;
+  let pageSize = 10;
+  let page = Number(req.query.pageNumber) || 1;
 
-    try{
-      let count = await Feature.countDocuments();
-      let features = await Feature.find().limit(pageSize).skip(pageSize * (page-1));
-      res.status(200).json({features, page, pages: Math.ceil(count / pageSize) });
-    } catch(error) {
-      res.status(500);
-      throw new Error("Server error")
+  try {
+    let count = await Feature.countDocuments();
+    let features = await Feature.find()
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
+    res
+      .status(200)
+      .json({ features, page, pages: Math.ceil(count / pageSize) });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error");
+  }
+});
+
+const getFeatureById = async (req, res) => {
+  try {
+    let data = await Feature.findById({ _id: req.params.featureId });
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error");
+  }
+};
+
+const upVote = asyncHandler(async (req, res) => {
+  // console.log("vote............/n")
+  let feature = await Feature.findById({ _id: req.params.featureId });
+  if (feature) {
+    const alreadyVoted = feature.votes.find(
+      (v) => v.toString() === req.user._id.toString()
+    );
+    if (alreadyVoted) {
+      res.status(200).json({ numOfVotes: feature.numOfVotes });
+    } else {
+      feature.votes.push(req.user._id);
+      feature.numOfVotes = feature.votes.length;
+      // console.log(feature.numOfVotes);
+      await feature.save();
+      res.status(201).json({ numOfVotes: feature.numOfVotes });
     }
-})
+  } else {
+    res.status(404);
+    throw new Error("Feature not found");
+  }
+});
 
-export { postFeature, getFeatures };
+const addComment = asyncHandler(async (req, res) => {
+  let feature = await Feature.findById({ _id: req.params.featureId });
+  if (feature) {
+    const comment = {
+      author: req.user._id,
+      content: req.body?.comment,
+      logo: req.body?.imagePath ? req.body?.imagePath : "",
+      isOwner: feature.author.toString() === req.user._id.toString() ? true : false,
+    };
+    feature.comments.push(comment);
+    let newFeature = await feature.save();
+    res.status(201).json(newFeature);
+  } else {
+    res.status(404);
+    throw new Error("Feature not found");
+  }
+});
+
+export { postFeature, getFeatures, getFeatureById, upVote, addComment };

@@ -43,7 +43,7 @@ const Feature = ({feature}) => {
         },
       };
       console.log("api request")
-      axios.get(`${baseURL}/features/feature/vote/${feature._id}`, config).then(response => {
+      axios.get(`${baseURL}/features/vote/${feature._id}`, config).then(response => {
         console.log(response.data.numOfVotes)
         setVotes(response.data.numOfVotes)
       })
