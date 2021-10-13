@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -8,22 +8,42 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 
+import { UserContext } from "../../contexts/userContext";
+import {formateDate, getProperImagePath} from "../../utils/utility.js";
+import axios from "axios";
 import "../assets/featureDetails.css";
+
+const baseURL = "http://localhost:5000/api";
+
+const activityConfig = [
+  { label: "NEWEST", value: "newest" },
+  { label: "OLDEST", value: "oldest" },
+];
 
 const FeatureDetails = () => {
   const [featureId, setFeatureId] = useState(
     window.location.pathname.split("/")[2]
   );
+  const [{ user }, dispatch] = useContext(UserContext);
+  if (!user && localStorage.getItem("user")) {
+    dispatch({
+      type: "SET_USER",
+      user: JSON.parse(localStorage.getItem("user")),
+    });
+  }
   const [faces, setFaces] = useState([1, 2, 3, 4]);
+  const [date, setDate] = useState(new Date().toLocaleString());
   const [status, setStatus] = useState("In progress");
   const [statusColor, setStatusColor] = useState("inProgress");
-  const [date, setDate] = useState(new Date().toLocaleString());
   const [textareaActive, setTextareActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageValue, setImageValue] = useState("");
   const [imageSrc, setImageSrc] = useState("");
   const [activeActivity, setActiveActivity] = useState("newest");
+  const [feature, setFeature] = useState({});
+  const [featureAuthor, setFeatureAuthor] = useState({});
   const [comments, setComments] = useState([1, 2, 3, 4]);
+  const [loading, setLoading] = useState(true);
 
   let history = useHistory();
   const textareaRef = useRef();
@@ -32,11 +52,6 @@ const FeatureDetails = () => {
   const backToPosts = () => {
     history.push("/");
   };
-
-  const activityConfig = [
-    { label: "NEWEST", value: "newest" },
-    { label: "OLDEST", value: "oldest" },
-  ];
 
   const toggoleActivity = (value) => {
     console.log(value);
@@ -49,9 +64,37 @@ const FeatureDetails = () => {
     setImageSrc(URL.createObjectURL(e.target.files[0]));
   };
 
-  useEffect(() => {
-    console.log("id: ", featureId);
-  });
+  useEffect(async () => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+      axios
+        .get(`${baseURL}/features/feature/${featureId}`, config)
+        .then((response) => {
+          setFeature(response.data);
+          setStatus(response.data.status);
+          if (response.data.comments.length > 0)
+            setComments(response.data.comments);
+          axios
+            .get(`${baseURL}/users/${response.data.author}`, config)
+            .then((response) => {
+              setFeatureAuthor(response.data);
+              setLoading(false);
+            });
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
+
+      // return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   useEffect(() => {
     if (status === "In progress") {
@@ -69,10 +112,10 @@ const FeatureDetails = () => {
     const showFullForm = () => {
       setTextareActive(true);
     };
-
-    textareaRef.current.addEventListener("focus", showFullForm);
-
-    return textareaRef.current.addEventListener("focus", showFullForm);
+    if (textareaRef && textareaRef.current) {
+      textareaRef.current.addEventListener("focus", showFullForm);
+    }
+    // return textareaRef.current.removeEventListener("focus", showFullForm);
   });
 
   useEffect(() => {
@@ -82,10 +125,12 @@ const FeatureDetails = () => {
       let newHeight = 20 + numberOfLineBreaks * 20 + 12 + 2;
       return newHeight;
     };
-    textareaRef.current.addEventListener("input", () => {
-      textareaRef.current.style.height =
-        calcHeight(textareaRef.current.value) + "px";
-    });
+    if (textareaRef.current && textareaRef) {
+      textareaRef.current.addEventListener("input", () => {
+        textareaRef.current.style.height =
+          calcHeight(textareaRef.current.value) + "px";
+      });
+    }
   });
 
   const renderRightSectionTop = () => {
@@ -93,11 +138,11 @@ const FeatureDetails = () => {
       <div className="rightSectionTop">
         <div className="topVotes">
           <FontAwesomeIcon icon={faThumbsUp} className={"voteIcon"} />
-          <p>500</p>
+          <p>{feature?.numOfVotes ? feature.numOfVotes : 0}</p>
         </div>
         <div className="topTitleandStatus">
-          <p className="title">Crunchyroll integration</p>
-          <p className={`status ${statusColor}`}>{status}</p>
+          <p className="title">{feature.title}</p>
+          <p className={`status ${statusColor}`}>{feature.status}</p>
         </div>
       </div>
     );
@@ -154,17 +199,19 @@ const FeatureDetails = () => {
     return (
       <div className="post">
         <img
-          src="https://data.whicdn.com/images/322027365/original.jpg?t=1541703413"
+          src={featureAuthor.profilePicture}
           className="userAvatar"
         />
         <div className="postRight">
-          <p className="userName">@Elias11</p>
+          <p className="userName">{featureAuthor.userName}</p>
           <p className="postDetail">
-            I don't know whether this is feasible with crunchyroll's APIs, but
-            ideally it would be nice to be able to link my kitsu and crunchyroll
-            accounts so that when I finish an episode on ...
+           {feature.detail}
           </p>
-          <p className="date">{date}</p>
+          {feature.logo && ( <img
+          src={getProperImagePath(feature.logo)}
+          style={{maxWidth: "100%", maxHeight: "200px", marginBottom: "5px", padding: "5px", borderRadius: "5px",}}
+        />)}
+          <p className="date">{formateDate(feature.createdAt)}</p>
         </div>
       </div>
     );
@@ -202,57 +249,75 @@ const FeatureDetails = () => {
 
   return (
     <div className="featureDetails">
-      <div className="leftSection">
-        <div className="backToPosts" onClick={backToPosts}>
-          <FontAwesomeIcon icon={faArrowLeft} className="backIcon" />
-          <p>Back to posts</p>
+      {loading ? (
+        <div
+          style={{
+            backgroundColor: "inherit",
+            color: "green",
+            fontSize: "20px",
+            padding: "20px",
+            fontWeight: "500",
+            textAlign: "center",
+          }}
+        >
+          {"Loading......."}
         </div>
-        <p className="votersP">Voters</p>
-        <div className="voters">
-          {faces.map((face) => {
-            return (
-              <img
-                className={"faceAvatar"}
-                src="https://data.whicdn.com/images/322027365/original.jpg?t=1541703413"
-              />
-            );
-          })}
-          <p>+200 </p>
-        </div>
-        <p className="powerdBy">Powerd by Feature Requests</p>
-      </div>
-      <div className="rightSection">
-        {renderRightSectionTop()}
-        <div className="postWithCommentForm">
-          {renderPost()}
-          {renderCommentForm()}
-        </div>
-        <div className="activitySection">
-          {/* comments/activity section */}
-          <div className="activityTop">
-            <p className="activity">ACTIVITY</p>
-            <div className="activityNav">
-              {activityConfig.map((activity, index) => {
+      ) : (
+        <>
+          {" "}
+          <div className="leftSection">
+            <div className="backToPosts" onClick={backToPosts}>
+              <FontAwesomeIcon icon={faArrowLeft} className="backIcon" />
+              <p>Back to posts</p>
+            </div>
+            <p className="votersP">Voters</p>
+            <div className="voters">
+              {faces.map((face) => {
                 return (
-                  <p
-                    className={
-                      activeActivity === activity.value
-                        ? "activeNav active"
-                        : "activeNav"
-                    }
-                    onClick={() => toggoleActivity(activity.value)}
-                  >
-                    {activity.label}
-                  </p>
+                  <img
+                    className={"faceAvatar"}
+                    src="https://data.whicdn.com/images/322027365/original.jpg?t=1541703413"
+                  />
                 );
               })}
+              <p>+200 </p>
             </div>
+            <p className="powerdBy">Powerd by Feature Requests</p>
           </div>
-          {comments.map((comment, index) => {
-            return renderComment(comment, index);
-          })}
-        </div>
-      </div>
+          <div className="rightSection">
+            {renderRightSectionTop()}
+            <div className="postWithCommentForm">
+              {renderPost()}
+              {renderCommentForm()}
+            </div>
+            <div className="activitySection">
+              {/* comments/activity section */}
+              <div className="activityTop">
+                <p className="activity">ACTIVITY</p>
+                <div className="activityNav">
+                  {activityConfig.map((activity, index) => {
+                    return (
+                      <p
+                        className={
+                          activeActivity === activity.value
+                            ? "activeNav active"
+                            : "activeNav"
+                        }
+                        onClick={() => toggoleActivity(activity.value)}
+                      >
+                        {activity.label}
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
+              {comments.map((comment, index) => {
+                return renderComment(comment, index);
+              })}
+            </div>
+          </div>{" "}
+        </>
+      )}
     </div>
   );
 };

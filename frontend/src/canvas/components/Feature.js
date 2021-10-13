@@ -1,10 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useContext} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
+import {getProperImagePath} from "../../utils/utility.js";
+import SignInModal from "../../auth/SignInModal";
 import "../assets/feature.css";
+import { UserContext } from "../../contexts/userContext";
+
+import axios from "axios";
+const baseURL = "http://localhost:5000/api";
+
 const Feature = ({feature}) => {
-  // console.log(feature)
+  const [{user}, dispatch] = useContext(UserContext);
+  if(!user && localStorage.getItem("user")){
+    dispatch({
+      type: "SET_USER",
+      user: JSON.parse(localStorage.getItem("user"))
+    })
+  }
+  const [signInModal, setSignInModal] = useState(false);
   const [status, setStatus] = useState(feature?.status);
   const [statusColor, setStatusColor] = useState("inProgress");
   const [title, setTitle] = useState(feature?.title);
@@ -18,18 +32,23 @@ const Feature = ({feature}) => {
     history.push(`/details/${feature._id}`);
   };
 
-  const getProperImagePath = (imagePath) => {
-    // console.log(imagePath)
-    let tempImagePath = "";
-    if (imagePath[1] === "f") {
-      for (let i = 24; i < imagePath.length; i++) {
-        tempImagePath += imagePath[i];
-      }
-      return `/images/${tempImagePath}`;
+  const handleVote = () => {
+    if(!user){
+      setSignInModal(true);
     } else {
-      return imagePath;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      console.log("api request")
+      axios.get(`${baseURL}/features/feature/vote/${feature._id}`, config).then(response => {
+        console.log(response.data.numOfVotes)
+        setVotes(response.data.numOfVotes)
+      })
     }
-  };
+  }
 
   useEffect(() => {
     // console.log(props.feature)
@@ -50,7 +69,7 @@ const Feature = ({feature}) => {
   return (
     <div className="feature">
       <div className="featureVotes">
-        <FontAwesomeIcon icon={faThumbsUp} className={"voteIcon"} />
+      <FontAwesomeIcon icon={faThumbsUp} className={"voteIcon"} onClick={handleVote}/>
         <p>{votes}</p>
       </div>
       <div className="featureContent" onClick={gotToDetails}>
@@ -69,6 +88,9 @@ const Feature = ({feature}) => {
         <FontAwesomeIcon icon={faComment} className="commentIcon" />
         <p>12</p>
       </div>
+      {signInModal && (
+        <SignInModal setSignInModal={(value) => setSignInModal(value)} />
+      )}
     </div>
   );
 };

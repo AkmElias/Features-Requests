@@ -2,10 +2,10 @@ import { useState, useRef, useEffect, useContext} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import SignInModal from "../../auth/SignInModal";
-import "../assets/style.css";
 import { UserContext } from "../../contexts/userContext";
 import axios from "axios";
 
+import "../assets/style.css";
 const customStyles = {
   content: {
     top: "50%",
@@ -80,7 +80,6 @@ const AddFeature = () => {
     }
     if (!somethingMissing()) {
       if (selectedFile) {
-        console.log("fuck")
        imagePath =  await handleFileUpload(e);
         e.preventDefault();
       }
@@ -95,7 +94,7 @@ const AddFeature = () => {
           console.log(imagePath);
           axios
             .post(
-              `${baseURL}/features/post/`,
+              `${baseURL}/features/feature/`,
               { title, detail, imagePath },
               config
             )
