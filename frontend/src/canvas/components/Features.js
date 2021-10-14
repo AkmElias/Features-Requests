@@ -11,13 +11,14 @@ const baseURL = "http://localhost:5000/api/features/";
 
 const Features = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-  const [selectedOption, setSelectedOption] = useState("New");
+  const [selectedOption, setSelectedOption] = useState("");
   const [showMenu, setShowMenu] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [features, setFeatures] = useState();
   const [filteredFeatures, setFilteredFeatures] = useState([]);
+  const [sortOption, setSortOption] = useState("");
   const [filterOption, setFilterOption] = useState("");
 
   const menuRef = useRef();
@@ -61,7 +62,27 @@ const Features = () => {
   };
 
   useEffect(() => {
-    console.log(filterOption)
+    console.log(sortOption);
+    if (sortOption) {
+      if (sortOption === "Top" || sortOption === "Trending") {
+        const sortedFeatures = features
+          .slice()
+          .sort((a, b) => b.comments.length - a.comments.length);
+        setFilteredFeatures(sortedFeatures);
+      } else if (sortOption === "New") {
+        let sortedFeatures = features
+          .slice()
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        setFilteredFeatures(sortedFeatures)
+      }
+    }
+  }, [sortOption]);
+
+  useEffect(() => {
+    console.log(filterOption);
     if (filterOption) {
       const newFeatures = features.filter((feature) => {
         return feature.status === filterOption;
@@ -105,6 +126,7 @@ const Features = () => {
                   }}
                   setShowMenu={setShowMenu}
                   setFilterOption={(value) => setFilterOption(value)}
+                  setSortOption={(value) => setSortOption(value)}
                 />
               </div>
             )}
@@ -153,7 +175,7 @@ const Features = () => {
         </div>
       ) : (
         <>
-          {searchTerm || filterOption
+          {searchTerm || filterOption || sortOption
             ? filteredFeatures.map((feature) => {
                 return <Feature key={feature._id} feature={feature} />;
               })

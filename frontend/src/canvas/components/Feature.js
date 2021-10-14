@@ -86,7 +86,7 @@ const Feature = ({feature}) => {
       </div>
       <div className="featureComments" onClick={gotToDetails}>
         <FontAwesomeIcon icon={faComment} className="commentIcon" />
-        <p>12</p>
+        <p>{feature.comments.length}</p>
       </div>
       {signInModal && (
         <SignInModal setSignInModal={(value) => setSignInModal(value)} />

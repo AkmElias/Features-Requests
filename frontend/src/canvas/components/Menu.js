@@ -13,7 +13,7 @@ const filterOptions = [
   { label: "Complete", value: "Complete" },
 ];
 
-const Menu = ({ selectedOption, selectOption, setShowMenu, setFilterOption }) => {
+const Menu = ({ selectedOption, selectOption, setShowMenu, setFilterOption, setSortOption }) => {
   return (
     <div className="menu">
       <div className="menuSort">
@@ -24,6 +24,7 @@ const Menu = ({ selectedOption, selectOption, setShowMenu, setFilterOption }) =>
               className={selectedOption === option.value ? "active" : ""}
               key={option.value}
               onClick={() => {
+                setSortOption(option.value);
                 selectOption(option.value);
                 setShowMenu(false);
               }}
