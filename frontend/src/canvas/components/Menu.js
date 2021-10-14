@@ -9,7 +9,7 @@ const sortOptions = [
 const filterOptions = [
   { label: "Under Review", value: "Under Review" },
   { label: "Planned", value: "Planned" },
-  { label: "In Progress", value: "In progress" },
+  { label: "In Progress", value: "In Progress" },
   { label: "Complete", value: "Complete" },
 ];
 

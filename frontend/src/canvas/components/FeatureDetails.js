@@ -42,6 +42,7 @@ const FeatureDetails = () => {
   const [featureAuthor, setFeatureAuthor] = useState({});
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [votes, setVotes] = useState(0);
 
   //comment state
   const [signInModal, setSignInModal] = useState(false);
@@ -49,6 +50,7 @@ const FeatureDetails = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageValue, setImageValue] = useState("");
   const [imageSrc, setImageSrc] = useState("");
+  const [filterCommentsOption, setFilterCommentsOption] = useState("")
   const [commentAuthorId, setCommentAuthorId] = useState(null);
   const [commentAuthorDetails, setCommentAuthorDetails] = useState({});
 
@@ -63,6 +65,7 @@ const FeatureDetails = () => {
   const toggoleActivity = (value) => {
     console.log(value);
     setActiveActivity(value);
+    setFilterCommentsOption(value);
   };
 
   const handleFileChange = (e) => {
@@ -82,6 +85,7 @@ const FeatureDetails = () => {
         .get(`${baseURL}/features/${featureId}`, config)
         .then((response) => {
           setFeature(response.data);
+          setVotes(response.data.numOfVotes);
           setStatus(response.data.status);
           if (response.data.comments.length > 0)
             setComments(response.data.comments);
@@ -208,6 +212,20 @@ const FeatureDetails = () => {
 
   },[commentAuthorId])
 
+  useEffect(() => {
+
+    if(filterCommentsOption){
+      if(filterCommentsOption === "newest"){
+        let filteredtComments = comments.slice().sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setComments(filteredtComments)
+      } else {
+        let filteredtComments = comments.slice().sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+        setComments(filteredtComments)
+      }
+    }
+
+  },[filterCommentsOption])
+
   const getCommentAuthorDetails = (authorId) => {
     const config = {
       headers: {
@@ -219,13 +237,31 @@ const FeatureDetails = () => {
       console.log(commentAuthorDetails);
     });
   };
+
+  const handleVote = () => {
+    if(!user){
+      setSignInModal(true);
+    } else {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      console.log("api request")
+      axios.get(`${baseURL}/features/vote/${featureId}`, config).then(response => {
+        console.log(response.data.numOfVotes)
+        setVotes(response.data.numOfVotes)
+      })
+    }
+  }
   
   const renderRightSectionTop = () => {
     return (
       <div className="rightSectionTop">
         <div className="topVotes">
-          <FontAwesomeIcon icon={faThumbsUp} className={"voteIcon"} />
-          <p>{feature?.numOfVotes ? feature.numOfVotes : 0}</p>
+          <FontAwesomeIcon icon={faThumbsUp} className={"voteIcon"} onClick={handleVote}/>
+          <p>{votes}</p>
         </div>
         <div className="topTitleandStatus">
           <p className="title">{feature.title}</p>
@@ -414,6 +450,9 @@ const FeatureDetails = () => {
             </div>
           </div>{" "}
         </>
+      )}
+       {signInModal && (
+        <SignInModal setSignInModal={(value) => setSignInModal(value)} />
       )}
     </div>
   );

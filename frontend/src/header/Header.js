@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import SignUpModal from "../auth/SignUpModal";
 import SignInModal from "../auth/SignInModal";
 import "./header.css";
@@ -7,14 +8,16 @@ import { UserContext } from "../contexts/userContext";
 const Header = () => {
   const [signUpModal, setSignUpModal] = useState(false);
   const [signInModal, setSignInModal] = useState(false);
-  const [{user}, dispatch] = useContext(UserContext);
+  const [{ user }, dispatch] = useContext(UserContext);
 
-  if(!user && localStorage.getItem("user")){
+  if (!user && localStorage.getItem("user")) {
     dispatch({
       type: "SET_USER",
-      user: JSON.parse(localStorage.getItem("user"))
-    })
+      user: JSON.parse(localStorage.getItem("user")),
+    });
   }
+
+  const history = useHistory();
 
   const removeUser = () => {
     localStorage.removeItem("user");
@@ -22,7 +25,11 @@ const Header = () => {
       type: "REMOVE_USER",
     });
   };
-  
+
+  const navToFeatureBoard = () => {
+      history.push("/features");
+  }
+
   // useEffect(() => {
   //   if(!user && localStorage.getItem("user")){
   //     dispatch({
@@ -42,10 +49,20 @@ const Header = () => {
               <img
                 clasName="avatar"
                 src={
-                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt9DZKrj_ZJD2EPmds05DCPmPdXht9oG-PmYytmlbajeltPyRJXxhoepGbXsbwBjc6Cl0&usqp=CAU"
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt9DZKrj_ZJD2EPmds05DCPmPdXht9oG-PmYytmlbajeltPyRJXxhoepGbXsbwBjc6Cl0&usqp=CAU"
                 }
               />
-              <span style={{ backgroundColor: "inherit", color: "#FFF", marginRight:"15px", cursor:"pointer"}}>{user.userName}</span>
+              <span
+                style={{
+                  backgroundColor: "inherit",
+                  color: "#FFF",
+                  marginRight: "15px",
+                  cursor: "pointer",
+                }}
+              >
+                {user.userName}
+              </span>
+              {user.role === "admin" && <p onClick={navToFeatureBoard}>Features</p>}
               <p onClick={removeUser}>Sign Out</p>
             </>
           ) : (

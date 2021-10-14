@@ -1,0 +1,70 @@
+.featureBoard {
+  background-color: #fff;
+  width: 80%;
+  margin: auto;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  margin-top: 100px;
+}
+
+#features {
+  background-color: #fff;
+}
+
+#features tr {
+  background-color: inherit;
+}
+#features th {
+  border: 1px solid #ddd;
+  background-color: inherit;
+  padding: 8px;
+  text-align: center;
+}
+
+#features td {
+  border: 1px solid #ddd;
+  max-width: 35%;
+  font-size: 15px;
+  font-weight: 500;
+  background-color: inherit;
+  padding: 8px;
+  text-align: center;
+}
+#features tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#features tr:hover {
+  background-color: #ddd;
+}
+
+#features th {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  background-color: rgb(85, 62, 32);
+  color: white;
+}
+
+.editIcon {
+  background-color: inherit;
+  color: #888 !important;
+  cursor: pointer;
+}
+
+.editIcon:hover {
+  color: #555 !important;
+}
+
+.deleteIcon {
+  background-color: inherit;
+  color: #888 !important;
+  cursor: pointer;
+}
+
+.deleteIcon:hover {
+  color: #555 !important;
+}
