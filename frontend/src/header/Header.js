@@ -42,7 +42,7 @@ const Header = () => {
   return (
     <div className="header">
       <div className="headerContent">
-        <p className="logo">Feature Requests</p>
+        <p className="logo" onClick={() => history.push("/")}>Feature Requests</p>
         <div className="headerRight">
           {user ? (
             <>
