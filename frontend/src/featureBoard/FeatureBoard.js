@@ -19,6 +19,8 @@ const FeatureBoard = () => {
   }
   const [featureList, setFeatureList] = useState([]);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editableFeature,setEditableFeature] = useState({});
+  const [updated,setUpdated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(async () => {
@@ -38,7 +40,12 @@ const FeatureBoard = () => {
         setLoading(false);
         console.log(error);
       });
-  }, []);
+  }, [updated]);
+
+  const editModal = (feature) => {
+      setEditableFeature(feature);
+      setEditModalOpen(true);
+  }
 
   const handleDelete = (featureId) => {
     if (window.confirm("Are you sure to delete?")) {
@@ -124,7 +131,7 @@ const FeatureBoard = () => {
                     <FontAwesomeIcon
                       icon={faEdit}
                       className="editIcon"
-                      onClick={() => setEditModalOpen(true)}
+                      onClick={() => editModal(feature)}
                     />
                   </td>
                   <td>
@@ -134,17 +141,18 @@ const FeatureBoard = () => {
                       onClick={() => handleDelete(feature._id)}
                     />
                   </td>
-                  {editModalOpen && (
-                    <EditModal
-                      feature={feature}
-                      setEditModalOpen={(value) => setEditModalOpen(value)}
-                    />
-                  )}
                 </tr>
               );
             })}
           </table>
         </div>
+      )}
+      {editModalOpen && (
+        <EditModal
+          feature={editableFeature}
+          setEditModalOpen={(value) => setEditModalOpen(value)}
+          setUpdated = {(value) => setUpdated(value)}
+        />
       )}
     </div>
   );
