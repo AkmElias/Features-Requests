@@ -126,7 +126,7 @@ const FeatureBoard = () => {
                       "No Logo"
                     )}
                   </td>
-                  <td>In Progress</td>
+                  <td>{feature.status}</td>
                   <td>
                     <FontAwesomeIcon
                       icon={faEdit}

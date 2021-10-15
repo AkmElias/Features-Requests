@@ -22,6 +22,13 @@ const customStyles = {
   },
 };
 
+const filterOptions = [
+  { label: "Under Review", value: "Under Review" },
+  { label: "Planned", value: "Planned" },
+  { label: "In Progress", value: "In Progress" },
+  { label: "Complete", value: "Complete" },
+];
+
 const baseURL = "http://localhost:5000/api/";
 
 const EditModal = ({ feature, setEditModalOpen, setUpdated }) => {
@@ -35,6 +42,7 @@ const EditModal = ({ feature, setEditModalOpen, setUpdated }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [title, setTitle] = useState(feature.title);
   const [detail, setDetail] = useState(feature.detail);
+  const [status, setStatus] = useState(feature?.status);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageValue, setImageValue] = useState("");
   const [imageSrc, setImageSrc] = useState(feature.logo);
@@ -120,7 +128,7 @@ const EditModal = ({ feature, setEditModalOpen, setUpdated }) => {
         axios
           .put(
             `${baseURL}features/${feature._id}`,
-            { title, detail, imagePath },
+            { title, detail, status, imagePath },
             config
           )
           .then((response) => {
@@ -200,6 +208,22 @@ const EditModal = ({ feature, setEditModalOpen, setUpdated }) => {
                     value={detail}
                     onChange={(e) => setDetail(e.target.value)}
                   />
+                </div>
+                <div className="addFeatureformGroup">
+                <label>Status</label>
+                  {filterOptions.map((option) => {
+                    return (
+                      <h4
+                        className={
+                          status === option.value ? "statusOption active" : "statusOption"
+                        }
+                        key={option.value}
+                        onClick={() => {setStatus(option.value)}}
+                      >
+                        {option.label}
+                      </h4>
+                    );
+                  })}
                 </div>
                 {imageSrc && renderImagePreview()}
                 <div className="buttons-group">

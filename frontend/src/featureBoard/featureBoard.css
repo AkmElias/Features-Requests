@@ -49,6 +49,15 @@
   color: white;
 }
 
+.statusOption{
+  background-color: inherit;
+  cursor: pointer;
+}
+
+.statusOption:hover{
+  background-color: #ddd;
+}
+
 .editIcon {
   background-color: inherit;
   color: #888 !important;
