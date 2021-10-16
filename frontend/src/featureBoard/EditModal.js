@@ -134,10 +134,12 @@ const EditModal = ({ feature, setEditModalOpen, setUpdated }) => {
           .then((response) => {
             setUpdateLoading(false);
             setUpdated(true);
+            setEditModalOpen(false);
             setIsOpen(false);
           })
           .catch((error) => {
             setUpdateLoading(false);
+            setEditModalOpen(false);
             setIsOpen(false);
             console.log(error);
           });

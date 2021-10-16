@@ -56,11 +56,12 @@ const upVote = asyncHandler(async (req, res) => {
       (v) => v.toString() === req.user._id.toString()
     );
     if (alreadyVoted) {
+      console.log(" ", feature.numOfVotes);
       res.status(200).json({ numOfVotes: feature.numOfVotes });
     } else {
       feature.votes.push(req.user._id);
       feature.numOfVotes = feature.votes.length;
-      // console.log(feature.numOfVotes);
+      console.log(" ", feature.numOfVotes);
       await feature.save();
       res.status(201).json({ numOfVotes: feature.numOfVotes });
     }
@@ -77,7 +78,8 @@ const addComment = asyncHandler(async (req, res) => {
       author: req.user._id,
       content: req.body?.comment,
       logo: req.body?.imagePath ? req.body?.imagePath : "",
-      isOwner: feature.author.toString() === req.user._id.toString() ? true : false,
+      isOwner:
+        feature.author.toString() === req.user._id.toString() ? true : false,
     };
     feature.comments.push(comment);
     let newFeature = await feature.save();
@@ -88,4 +90,45 @@ const addComment = asyncHandler(async (req, res) => {
   }
 });
 
-export { postFeature, getFeatures, getFeatureById, upVote, addComment };
+const updateFeature = asyncHandler(async (req, res) => {
+  console.log("update..", req.params.featureId);
+  let feature = await Feature.findOne({_id: req.params.featureId});
+  if(feature){ 
+    try {
+      feature.title = req.body.title,
+      feature.detail = req.body.detail,
+      feature.status = req.body.status,
+      feature.logo = req.body.imagePath
+      let updatedFeature = await feature.save();
+      res.status(200).json(updatedFeature)
+    } catch(error) {
+      res.status(500);
+      throw new Error("Server error");
+    }
+    
+  } else {
+    res.status(404);
+    throw new Error("Feature Not Found")
+  }
+})
+
+const deleteFeature = asyncHandler(async (req, res) => {
+  try {
+    console.log("delete..", req.params.featureId)
+    await Feature.deleteOne({ _id: req.params.featureId });
+    res.status(200).json(`${req.params.featureId} deleted`);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error.");
+  }
+});
+
+export {
+  postFeature,
+  getFeatures,
+  getFeatureById,
+  upVote,
+  addComment,
+  updateFeature,
+  deleteFeature,
+};

@@ -43,8 +43,10 @@ const FeatureBoard = () => {
   }, [updated]);
 
   const editModal = (feature) => {
+    console.log("dsfd")
+    setEditModalOpen(true);
       setEditableFeature(feature);
-      setEditModalOpen(true);
+      
   }
 
   const handleDelete = (featureId) => {

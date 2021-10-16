@@ -46,7 +46,7 @@ const adminLogin = async (req, res) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { userName, email, role, password } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const userExists = await User.findOne({ email });
 
@@ -76,7 +76,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const getUserById = asyncHandler(async (req, res) => {
-  console.log(req.params)
+  // console.log(req.params)
   try{
     let data = await User.findById({_id: req.params.id});
     res.status(200).json(data);

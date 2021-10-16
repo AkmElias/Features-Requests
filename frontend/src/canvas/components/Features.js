@@ -62,7 +62,6 @@ const Features = () => {
   };
 
   useEffect(() => {
-    console.log(sortOption);
     if (sortOption) {
       if (sortOption === "Top" || sortOption === "Trending") {
         const sortedFeatures = features
@@ -82,7 +81,6 @@ const Features = () => {
   }, [sortOption]);
 
   useEffect(() => {
-    console.log(filterOption);
     if (filterOption) {
       const newFeatures = features.filter((feature) => {
         return feature.status === filterOption;
